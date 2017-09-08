@@ -62,9 +62,9 @@ describe GildedRose do
       expect(stock.items[2].quality).to eq 5
     end
 
-    # it 'if conjured, quality decreases by 2' do
-    #   expect(stock.items[8].quality).to eq 4
-    # end
+    it 'if conjured, quality decreases by 2' do
+      expect(stock.items[8].quality).to eq 4
+    end
 
   end
 end
