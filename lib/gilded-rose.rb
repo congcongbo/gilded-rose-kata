@@ -4,52 +4,8 @@ class GildedRose
     @items = items
   end
 
-  def update_quality()
-    @items.each do |item|
-      if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert"
-        if item.quality > 0
-          if item.name != "Sulfuras, Hand of Ragnaros"
-            item.quality = item.quality - 1
-          end
-        end
-      else
-        if item.quality < 50
-          item.quality = item.quality + 1
-          if item.name == "Backstage passes to a TAFKAL80ETC concert"
-            if item.sell_in < 11
-              if item.quality < 50
-                item.quality = item.quality + 1
-              end
-            end
-            if item.sell_in < 6
-              if item.quality < 50
-                item.quality = item.quality + 1
-              end
-            end
-          end
-        end
-      end
-      if item.name != "Sulfuras, Hand of Ragnaros"
-        item.sell_in = item.sell_in - 1
-      end
-      if item.sell_in < 0
-        if item.name != "Aged Brie"
-          if item.name != "Backstage passes to a TAFKAL80ETC concert"
-            if item.quality > 0
-              if item.name != "Sulfuras, Hand of Ragnaros"
-                item.quality = item.quality - 1
-              end
-            end
-          else
-            item.quality = item.quality - item.quality
-          end
-        else
-          if item.quality < 50
-            item.quality = item.quality + 1
-          end
-        end
-      end
-    end
+  def update_quality
+    @items.each { |item| item.update unless item.legendary? }
   end
 end
 
@@ -60,6 +16,58 @@ class Item
     @name = name
     @sell_in = sell_in
     @quality = quality
+  end
+
+  def update
+    update_sell_in
+    if brie?
+      update_brie
+    elsif pass?
+      update_pass
+    else
+      update_item_quality
+    end
+    zero_quality
+  end
+
+  def update_sell_in
+    @sell_in -= 1 unless legendary?
+  end
+
+  def update_item_quality
+    @sell_in > 0 ? @quality -= 1 : @quality -= 2
+  end
+
+  def legendary?
+    @name == "Sulfuras, Hand of Ragnaros"
+  end
+
+  def brie?
+    @name == "Aged Brie"
+  end
+
+  def pass?
+    @name == "Backstage passes to a TAFKAL80ETC concert"
+  end
+
+  def update_brie
+    @sell_in > 0 ? @quality += 1 : @quality -= 1
+  end
+
+  def update_pass
+    if @sell_in <=0
+      @quality = 0
+    elsif @sell_in <= 5
+      @quality += 3
+    elsif @sell_in <= 10
+      @quality += 2
+    else @sell_in < 10
+      @quality += 1
+    end
+  end
+
+  def zero_quality
+    @quality = 0 if @quality < 0
   end
 
   def to_s()
