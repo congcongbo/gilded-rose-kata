@@ -37,7 +37,7 @@ class Item
   end
 
   def update_sell_in
-    @sell_in -= 1 unless legendary?
+    @sell_in -= 1
   end
 
   def update_item_quality
